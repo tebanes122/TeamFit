@@ -1,0 +1,448 @@
+/* ============================================================
+   TEAM FIT — Sistema de diseño "sala de pesas de noche"
+   Fondo carbón, display Anton (póster de gimnasio),
+   acento naranja fuego, semáforo de cuotas.
+   ============================================================ */
+
+:root {
+  --carbon: #0e0f12;        /* fondo principal */
+  --panel: #17181d;         /* tarjetas y paneles */
+  --panel-2: #1e2026;       /* hover / paneles internos */
+  --linea: #2a2c33;         /* bordes sutiles */
+  --texto: #f2f2f0;
+  --texto-2: #9a9ca5;
+  --fuego: #ff5a1f;         /* acento principal Team Fit */
+  --fuego-suave: rgba(255, 90, 31, 0.12);
+  --verde: #b6f542;         /* cuota al día */
+  --amarillo: #ffc93c;      /* por vencer */
+  --rojo: #ff3b3b;          /* vencida */
+  --verde-suave: rgba(182, 245, 66, 0.12);
+  --amarillo-suave: rgba(255, 201, 60, 0.12);
+  --rojo-suave: rgba(255, 59, 59, 0.12);
+  --display: 'Anton', sans-serif;
+  --cuerpo: 'Barlow', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--carbon);
+  color: var(--texto);
+  font-family: var(--cuerpo);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--cuerpo); cursor: pointer; }
+
+/* ---------- contenedor general ---------- */
+.shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px 80px;
+}
+
+/* ---------- barra superior ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--linea);
+  margin-bottom: 22px;
+}
+
+.logo {
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.logo span { color: var(--fuego); }
+
+.rol-chip {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--texto-2);
+  border: 1px solid var(--linea);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+
+/* ---------- títulos de sección ---------- */
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fuego);
+  margin-bottom: 6px;
+}
+
+.titulo {
+  font-family: var(--display);
+  font-size: clamp(26px, 5vw, 38px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.05;
+}
+
+.subtitulo { color: var(--texto-2); margin-top: 6px; font-size: 15px; }
+
+.seccion { margin-top: 34px; }
+.seccion-titulo {
+  font-family: var(--display);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.seccion-titulo::after {
+  content: '';
+  flex: 1;
+  height: 3px;
+  background: linear-gradient(90deg, var(--linea), transparent);
+  border-radius: 2px;
+}
+
+/* ---------- marcador deportivo (KPIs) ---------- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.kpi {
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  padding: 16px 16px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--fuego);
+}
+.kpi.kpi-verde::before { background: var(--verde); }
+.kpi.kpi-rojo::before { background: var(--rojo); }
+.kpi.kpi-amarillo::before { background: var(--amarillo); }
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--texto-2);
+}
+.kpi-valor {
+  font-family: var(--display);
+  font-size: clamp(28px, 6vw, 40px);
+  line-height: 1.1;
+  margin-top: 4px;
+}
+.kpi-extra { font-size: 13px; color: var(--texto-2); margin-top: 2px; }
+
+/* ---------- semáforo de cuotas ---------- */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+.estado::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.estado-ok { color: var(--verde); background: var(--verde-suave); }
+.estado-pronto { color: var(--amarillo); background: var(--amarillo-suave); }
+.estado-vencida { color: var(--rojo); background: var(--rojo-suave); }
+
+/* ---------- listas / tarjetas de alumnos ---------- */
+.lista { display: flex; flex-direction: column; gap: 10px; }
+
+.fila {
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--linea);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--fuego);
+  flex-shrink: 0;
+}
+
+.fila-info { flex: 1; min-width: 140px; }
+.fila-nombre { font-weight: 600; font-size: 15px; }
+.fila-detalle { font-size: 13px; color: var(--texto-2); margin-top: 2px; }
+
+.btn-wsp {
+  background: var(--verde-suave);
+  color: var(--verde);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 9px 14px;
+}
+.btn-wsp:hover { border-color: var(--verde); }
+
+/* ---------- botones ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--fuego);
+  color: #0e0f12;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 22px;
+  transition: transform 0.08s ease;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-secundario {
+  background: var(--panel-2);
+  color: var(--texto);
+  border: 1px solid var(--linea);
+}
+
+/* ---------- barras (horas pico / progreso) ---------- */
+.barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 110px;
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  padding: 16px 16px 30px;
+  position: relative;
+}
+.barra {
+  flex: 1;
+  background: var(--panel-2);
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  min-width: 10px;
+}
+.barra.activa { background: var(--fuego); }
+.barra-label {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--texto-2);
+  white-space: nowrap;
+}
+
+/* ---------- rutina del alumno ---------- */
+.ejercicio {
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.ejercicio-num {
+  font-family: var(--display);
+  font-size: 20px;
+  color: var(--linea);
+  width: 30px;
+  flex-shrink: 0;
+}
+.ejercicio-info { flex: 1; min-width: 150px; }
+.ejercicio-nombre { font-weight: 600; font-size: 15px; }
+.ejercicio-series { font-size: 13px; color: var(--texto-2); margin-top: 2px; }
+
+.peso-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.peso-anterior {
+  font-size: 12px;
+  color: var(--texto-2);
+  text-align: right;
+  line-height: 1.3;
+}
+.peso-anterior strong { color: var(--texto); font-size: 14px; }
+
+.peso-input {
+  width: 74px;
+  background: var(--carbon);
+  border: 1px solid var(--linea);
+  border-radius: 10px;
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: 18px;
+  text-align: center;
+  padding: 10px 6px;
+}
+.peso-input:focus { outline: 2px solid var(--fuego); border-color: var(--fuego); }
+
+.pr-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fuego);
+  background: var(--fuego-suave);
+  border-radius: 999px;
+  padding: 3px 9px;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- banner cuota alumno ---------- */
+.banner-cuota {
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  border: 1px solid var(--linea);
+}
+.banner-cuota.b-ok { background: var(--verde-suave); border-color: rgba(182,245,66,0.3); }
+.banner-cuota.b-pronto { background: var(--amarillo-suave); border-color: rgba(255,201,60,0.3); }
+.banner-cuota.b-vencida { background: var(--rojo-suave); border-color: rgba(255,59,59,0.3); }
+
+.banner-dias {
+  font-family: var(--display);
+  font-size: 42px;
+  line-height: 1;
+}
+.b-ok .banner-dias { color: var(--verde); }
+.b-pronto .banner-dias { color: var(--amarillo); }
+.b-vencida .banner-dias { color: var(--rojo); }
+
+/* ---------- racha ---------- */
+.racha {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.dia-racha {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--texto-2);
+}
+.dia-racha.fue {
+  background: var(--fuego-suave);
+  border-color: var(--fuego);
+  color: var(--fuego);
+}
+
+/* ---------- landing ---------- */
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(255, 90, 31, 0.16), transparent),
+    var(--carbon);
+}
+
+.landing-logo {
+  font-family: var(--display);
+  font-size: clamp(54px, 14vw, 110px);
+  text-transform: uppercase;
+  line-height: 0.95;
+  letter-spacing: 1px;
+}
+.landing-logo span { color: var(--fuego); }
+
+.landing-sub {
+  color: var(--texto-2);
+  font-size: 16px;
+  margin-top: 14px;
+  max-width: 420px;
+}
+
+.landing-botones {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.landing-demo {
+  margin-top: 26px;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--texto-2);
+}
+
+/* ---------- tabla simple admin ---------- */
+.mini-tabla { width: 100%; border-collapse: collapse; font-size: 14px; }
+.mini-tabla th {
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--texto-2);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--linea);
+}
+.mini-tabla td { padding: 11px 10px; border-bottom: 1px solid var(--linea); }
+.mini-tabla tr:last-child td { border-bottom: none; }
+.panel-tabla {
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  overflow-x: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
