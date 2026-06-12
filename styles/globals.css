@@ -559,3 +559,166 @@ button { font-family: var(--cuerpo); cursor: pointer; }
   left: 0;
   color: var(--fuego);
 }
+
+/* ---------- planificador semanal ---------- */
+.tabs-dias {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.tab-dia {
+  flex: 1;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  color: var(--texto-2);
+  font-family: var(--display);
+  font-size: 15px;
+  position: relative;
+}
+.tab-dia.con-rutina::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--fuego);
+}
+.tab-dia.activo {
+  background: var(--fuego);
+  border-color: var(--fuego);
+  color: #0e0f12;
+}
+.tab-dia.activo.con-rutina::after { background: #0e0f12; }
+
+.dia-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.dia-nombre {
+  font-family: var(--display);
+  font-size: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hoy-badge {
+  font-family: var(--cuerpo);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--fuego);
+  background: var(--fuego-suave);
+  border: 1px solid var(--fuego);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.dia-grupos {
+  color: var(--fuego);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.btn-editar {
+  background: var(--panel-2);
+  color: var(--texto);
+  border: 1px solid var(--linea);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 9px 14px;
+  white-space: nowrap;
+}
+.btn-editar:hover { border-color: var(--fuego); }
+
+/* editor de series y repeticiones */
+.series-editor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  color: var(--texto-2);
+  font-size: 13px;
+}
+.input-mini {
+  width: 48px;
+  background: var(--carbon);
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  color: var(--texto);
+  font-family: var(--cuerpo);
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  padding: 7px 4px;
+}
+.input-mini:focus { outline: 2px solid var(--fuego); border-color: var(--fuego); }
+.input-reps { width: 60px; }
+
+.btn-quitar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--rojo-suave);
+  color: var(--rojo);
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.btn-quitar:hover { border-color: var(--rojo); }
+
+/* catálogo de ejercicios para agregar */
+.catalogo { margin-top: 4px; }
+.catalogo-grupo { margin-top: 12px; }
+.catalogo-grupo-nombre {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--texto-2);
+  margin-bottom: 8px;
+}
+.catalogo-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  color: var(--texto);
+  text-align: left;
+}
+.catalogo-item:hover { border-color: var(--fuego); }
+.catalogo-pic {
+  width: 34px;
+  height: 34px;
+  color: var(--fuego);
+  flex-shrink: 0;
+}
+.catalogo-pic svg { width: 100%; height: 100%; }
+.catalogo-nombre { flex: 1; font-weight: 600; font-size: 14px; }
+.catalogo-mas {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--fuego);
+}
+
+/* pictogramas dentro de miniaturas y ficha */
+.mini-ejercicio { color: var(--fuego); padding: 7px; }
+.mini-ejercicio svg { width: 100%; height: 100%; }
+.ficha-icono { color: var(--fuego); padding: 10px; }
+.ficha-icono svg { width: 100%; height: 100%; }
