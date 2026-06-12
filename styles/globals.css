@@ -446,3 +446,116 @@ button { font-family: var(--cuerpo); cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------- nota de privacidad ---------- */
+.nota-privacidad {
+  font-size: 12px;
+  color: var(--texto-2);
+  margin-top: 10px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ---------- miniatura de ejercicio ---------- */
+.mini-ejercicio {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--fuego-suave);
+  border: 1px solid var(--linea);
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mini-ejercicio:hover { border-color: var(--fuego); }
+
+/* ---------- ficha de ejercicio (modal) ---------- */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+@media (min-width: 600px) {
+  .modal-fondo { align-items: center; }
+}
+
+.modal-ficha {
+  background: var(--panel);
+  border: 1px solid var(--linea);
+  border-radius: 20px;
+  padding: 22px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.ficha-icono {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--fuego-suave);
+  border: 1px solid var(--fuego);
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.ficha-titulo {
+  font-family: var(--display);
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ficha-musculos {
+  color: var(--fuego);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.ficha-sub {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--texto-2);
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+
+.ficha-texto {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--texto);
+}
+
+.ficha-consejos {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ficha-consejos li {
+  font-size: 14px;
+  line-height: 1.5;
+  padding-left: 18px;
+  position: relative;
+}
+.ficha-consejos li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--fuego);
+}
