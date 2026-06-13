@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { supabase, GIMNASIO_ID, hoyISO, diasHasta } from '../lib/supabase';
+import { useRouter } from 'next/router';
+import { supabase, GIMNASIO_ID, hoyISO, diasHasta, usuarioActual, cerrarSesion } from '../lib/supabase';
 
 // ============================================================
 // PANEL DEL DUEÑO — conectado a Supabase
@@ -27,6 +28,11 @@ function textoVencimiento(dias) {
 }
 
 export default function Admin() {
+  const router = useRouter();
+  const [sinPermiso, setSinPermiso] = useState(false);
+  const [solicitudes, setSolicitudes] = useState([]);
+  const [planes, setPlanes] = useState([]);
+  const [procesando, setProcesando] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [alumnos, setAlumnos] = useState([]);
@@ -39,11 +45,22 @@ export default function Admin() {
   useEffect(() => {
     async function cargar() {
       try {
+        const { session, alumno: yo } = await usuarioActual();
+        if (!session) {
+          router.replace('/login');
+          return;
+        }
+        if (yo?.rol !== 'dueno') {
+          setSinPermiso(true);
+          setCargando(false);
+          return;
+        }
+
         const hoy = hoyISO();
         const inicioMes = hoy.slice(0, 8) + '01';
         const hace30 = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
 
-        const [rAlumnos, rPagosMes, rAsisHoy, rAsis30, rPagosUlt] = await Promise.all([
+        const [rAlumnos, rPagosMes, rAsisHoy, rAsis30, rPagosUlt, rSol, rPlanes] = await Promise.all([
           supabase
             .from('alumnos')
             .select('id, nombre, apellido, telefono, vencimiento, planes(nombre, precio)')
@@ -71,9 +88,20 @@ export default function Admin() {
             .eq('gimnasio_id', GIMNASIO_ID)
             .order('fecha_pago', { ascending: false })
             .limit(5),
+          supabase
+            .from('solicitudes_registro')
+            .select('*')
+            .eq('estado', 'pendiente')
+            .order('creado_en', { ascending: true }),
+          supabase
+            .from('planes')
+            .select('id, nombre')
+            .eq('gimnasio_id', GIMNASIO_ID)
+            .eq('activo', true)
+            .order('dias_por_semana'),
         ]);
 
-        const errores = [rAlumnos, rPagosMes, rAsisHoy, rAsis30, rPagosUlt].find((r) => r.error);
+        const errores = [rAlumnos, rPagosMes, rAsisHoy, rAsis30, rPagosUlt, rSol, rPlanes].find((r) => r.error);
         if (errores) throw errores.error;
 
         setAlumnos(rAlumnos.data || []);
@@ -82,6 +110,8 @@ export default function Admin() {
         setAsistenciasHoy(rAsisHoy.data || []);
         setUltimasAsistencias(rAsis30.data || []);
         setUltimosPagos(rPagosUlt.data || []);
+        setSolicitudes(rSol.data || []);
+        setPlanes(rPlanes.data || []);
       } catch (e) {
         setError(e.message || 'Error al cargar los datos');
       } finally {
@@ -90,6 +120,69 @@ export default function Admin() {
     }
     cargar();
   }, []);
+
+  // ---------- aprobación de cuentas ----------
+  async function aprobarSolicitud(sol) {
+    setProcesando(sol.id);
+    try {
+      // si ya existe un alumno con ese DNI sin cuenta, se vincula; si no, se crea
+      let vinculado = false;
+      if (sol.dni) {
+        const rExiste = await supabase
+          .from('alumnos')
+          .select('id')
+          .eq('gimnasio_id', GIMNASIO_ID)
+          .eq('dni', sol.dni)
+          .is('auth_user_id', null)
+          .maybeSingle();
+        if (rExiste.data) {
+          const rUpd = await supabase
+            .from('alumnos')
+            .update({ auth_user_id: sol.auth_user_id, email: sol.email })
+            .eq('id', rExiste.data.id);
+          if (rUpd.error) throw rUpd.error;
+          vinculado = true;
+        }
+      }
+      if (!vinculado) {
+        const rIns = await supabase.from('alumnos').insert({
+          gimnasio_id: GIMNASIO_ID,
+          nombre: sol.nombre || 'Alumno',
+          apellido: sol.apellido || '',
+          dni: sol.dni || null,
+          telefono: sol.telefono || null,
+          email: sol.email,
+          auth_user_id: sol.auth_user_id,
+          plan_id: planes[0]?.id || null,
+          rol: 'alumno',
+          activo: true,
+        });
+        if (rIns.error) throw rIns.error;
+      }
+      const rSol = await supabase
+        .from('solicitudes_registro')
+        .update({ estado: 'aprobada' })
+        .eq('id', sol.id);
+      if (rSol.error) throw rSol.error;
+      setSolicitudes(solicitudes.filter((s) => s.id !== sol.id));
+    } catch (e) {
+      alert('No se pudo aprobar: ' + e.message);
+    } finally {
+      setProcesando(null);
+    }
+  }
+
+  async function rechazarSolicitud(sol) {
+    if (!confirm(`¿Rechazar la solicitud de ${sol.nombre} ${sol.apellido}?`)) return;
+    setProcesando(sol.id);
+    const r = await supabase
+      .from('solicitudes_registro')
+      .update({ estado: 'rechazada' })
+      .eq('id', sol.id);
+    if (r.error) alert('No se pudo rechazar: ' + r.error.message);
+    else setSolicitudes(solicitudes.filter((s) => s.id !== sol.id));
+    setProcesando(null);
+  }
 
   // ---------- cálculos derivados ----------
   const conDias = alumnos.map((a) => ({ ...a, dias: diasHasta(a.vencimiento) }));
@@ -128,6 +221,28 @@ export default function Admin() {
     month: 'long',
   });
 
+  if (sinPermiso) {
+    return (
+      <div className="shell">
+        <div className="topbar">
+          <Link href="/" className="logo">TEAM<span>FIT</span></Link>
+          <button className="btn-salir" onClick={async () => { await cerrarSesion(); router.push('/login'); }}>Salir</button>
+        </div>
+        <div className="seccion" style={{ textAlign: 'center', paddingTop: 40 }}>
+          <div className="eyebrow">Acceso restringido</div>
+          <h1 className="titulo">Solo para el dueño 🔒</h1>
+          <p className="subtitulo" style={{ maxWidth: 420, margin: '14px auto 0' }}>
+            Este panel es exclusivo de la administración de Team Fit.
+            Si sos alumno, tu espacio está en la sección de entrenamiento.
+          </p>
+          <Link href="/alumno" className="btn" style={{ marginTop: 20, display: 'inline-flex' }}>
+            Ir a mi entrenamiento →
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (cargando) {
     return (
       <div className="shell">
@@ -156,7 +271,10 @@ export default function Admin() {
     <div className="shell">
       <div className="topbar">
         <Link href="/" className="logo">TEAM<span>FIT</span></Link>
-        <span className="rol-chip">Panel del dueño</span>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <span className="rol-chip">Panel del dueño</span>
+          <button className="btn-salir" onClick={async () => { await cerrarSesion(); router.push('/login'); }}>Salir</button>
+        </div>
       </div>
 
       <div>
@@ -164,6 +282,40 @@ export default function Admin() {
         <h1 className="titulo">Hola, Team Fit</h1>
         <p className="subtitulo" style={{ textTransform: 'capitalize' }}>{fechaLinda}</p>
       </div>
+
+      {/* ---------- Solicitudes pendientes ---------- */}
+      {solicitudes.length > 0 && (
+        <div className="seccion">
+          <div className="seccion-titulo">🔔 Cuentas por aprobar ({solicitudes.length})</div>
+          <div className="lista">
+            {solicitudes.map((s) => (
+              <div className="fila" key={s.id}>
+                <div className="avatar">{iniciales(s.nombre || '?', s.apellido || '?')}</div>
+                <div className="fila-info">
+                  <div className="fila-nombre">{s.nombre} {s.apellido}</div>
+                  <div className="fila-detalle">
+                    DNI {s.dni || '—'} · {s.email}{s.telefono ? ` · ${s.telefono}` : ''}
+                  </div>
+                </div>
+                <button
+                  className="btn-wsp"
+                  disabled={procesando === s.id}
+                  onClick={() => aprobarSolicitud(s)}
+                >
+                  {procesando === s.id ? '...' : '✓ Aprobar'}
+                </button>
+                <button
+                  className="btn-quitar"
+                  disabled={procesando === s.id}
+                  onClick={() => rechazarSolicitud(s)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ---------- KPIs ---------- */}
       <div className="seccion">
