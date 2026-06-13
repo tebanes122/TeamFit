@@ -283,6 +283,12 @@ export default function Admin() {
         <p className="subtitulo" style={{ textTransform: 'capitalize' }}>{fechaLinda}</p>
       </div>
 
+      <div className="seccion" style={{ marginTop: 18 }}>
+        <Link href="/alumnos" className="btn" style={{ width: '100%' }}>
+          👥 Gestionar alumnos y pagos
+        </Link>
+      </div>
+
       {/* ---------- Solicitudes pendientes ---------- */}
       {solicitudes.length > 0 && (
         <div className="seccion">
