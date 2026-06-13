@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { supabase, GIMNASIO_ID, hoyISO, diasHasta } from '../lib/supabase';
+import { useRouter } from 'next/router';
+import { supabase, GIMNASIO_ID, hoyISO, diasHasta, usuarioActual, cerrarSesion } from '../lib/supabase';
 import Pictograma from '../components/Pictogramas';
 
 // ============================================================
 // VISTA DEL ALUMNO — rutina semanal planificable
-// Alumno demo: Esteban Fernández (DNI 42333444).
+// Requiere sesión iniciada y cuenta aprobada por el gimnasio.
 // ============================================================
 
-const DNI_ALUMNO_DEMO = '42333444';
 const ID_PRESS_BANCA = '33333333-3333-3333-3333-333333333301';
 
 // Ubicación de Team Fit (Garupá, colectora RN12) y radio permitido
@@ -57,6 +57,8 @@ function distanciaMetros(lat1, lng1, lat2, lng2) {
 }
 
 export default function Alumno() {
+  const router = useRouter();
+  const [pendiente, setPendiente] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [alumno, setAlumno] = useState(null);
@@ -77,14 +79,17 @@ export default function Alumno() {
   // ---------- carga inicial ----------
   async function cargar() {
     try {
-      const rAlumno = await supabase
-        .from('alumnos')
-        .select('id, nombre, apellido, peso_corporal, vencimiento, planes(nombre)')
-        .eq('gimnasio_id', GIMNASIO_ID)
-        .eq('dni', DNI_ALUMNO_DEMO)
-        .single();
-      if (rAlumno.error) throw rAlumno.error;
-      const al = rAlumno.data;
+      const { session, alumno: al } = await usuarioActual();
+      if (!session) {
+        router.replace('/login');
+        return;
+      }
+      if (!al) {
+        // cuenta creada pero todavía no aprobada/vinculada por el gimnasio
+        setPendiente(true);
+        setCargando(false);
+        return;
+      }
       setAlumno(al);
 
       const hace7 = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
@@ -299,11 +304,31 @@ export default function Alumno() {
     );
   }
 
+  if (pendiente) {
+    return (
+      <div className="shell">
+        <div className="topbar">
+          <Link href="/" className="logo">TEAM<span>FIT</span></Link>
+          <button className="btn-salir" onClick={async () => { await cerrarSesion(); router.push('/login'); }}>Salir</button>
+        </div>
+        <div className="seccion" style={{ textAlign: 'center', paddingTop: 40 }}>
+          <div className="eyebrow">Cuenta en revisión</div>
+          <h1 className="titulo">¡Ya casi! ⏳</h1>
+          <p className="subtitulo" style={{ maxWidth: 420, margin: '14px auto 0' }}>
+            Tu cuenta fue creada y está esperando la aprobación del gimnasio.
+            Apenas Team Fit la apruebe vas a poder ver tu rutina, tu cuota y tu progreso.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (error || !alumno) {
     return (
       <div className="shell">
         <div className="topbar">
           <Link href="/" className="logo">TEAM<span>FIT</span></Link>
+          <button className="btn-salir" onClick={async () => { await cerrarSesion(); router.push('/login'); }}>Salir</button>
         </div>
         <p className="subtitulo">No se pudieron cargar tus datos: {error}</p>
       </div>
@@ -368,7 +393,10 @@ export default function Alumno() {
     <div className="shell">
       <div className="topbar">
         <Link href="/" className="logo">TEAM<span>FIT</span></Link>
-        <span className="rol-chip">Plan {alumno.planes?.nombre}</span>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {alumno.planes?.nombre && <span className="rol-chip">Plan {alumno.planes.nombre}</span>}
+          <button className="btn-salir" onClick={async () => { await cerrarSesion(); router.push('/login'); }}>Salir</button>
+        </div>
       </div>
 
       <div>
