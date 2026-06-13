@@ -11,8 +11,8 @@
   --linea: #2a2c33;         /* bordes sutiles */
   --texto: #f2f2f0;
   --texto-2: #9a9ca5;
-  --fuego: #ffd60a;         /* acento principal Team Fit */
-  --fuego-suave: rgba(255, 214, 10, 0.12);
+  --fuego: #ffc800;         /* acento principal Team Fit */
+  --fuego-suave: rgba(255, 200, 0, 0.12);
   --verde: #4ade80;         /* cuota al día */
   --amarillo: #ff9f1c;      /* por vencer */
   --rojo: #ff3b3b;          /* vencida */
@@ -386,7 +386,7 @@ button { font-family: var(--cuerpo); cursor: pointer; }
   padding: 24px;
   text-align: center;
   background:
-    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(255, 214, 10, 0.16), transparent),
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(255, 200, 0, 0.16), transparent),
     var(--carbon);
 }
 
@@ -730,8 +730,8 @@ button { font-family: var(--cuerpo); cursor: pointer; }
 .landing-page {
   min-height: 100vh;
   background:
-    radial-gradient(ellipse 60% 38% at 75% 0%, rgba(255, 214, 10, 0.18), transparent),
-    radial-gradient(ellipse 50% 30% at 10% 45%, rgba(255, 214, 10, 0.07), transparent),
+    radial-gradient(ellipse 60% 38% at 75% 0%, rgba(255, 200, 0, 0.18), transparent),
+    radial-gradient(ellipse 50% 30% at 10% 45%, rgba(255, 200, 0, 0.07), transparent),
     var(--carbon);
   overflow-x: hidden;
 }
@@ -773,7 +773,7 @@ button { font-family: var(--cuerpo); cursor: pointer; }
 }
 .hero-titulo span {
   color: var(--fuego);
-  text-shadow: 0 0 50px rgba(255, 214, 10, 0.45);
+  text-shadow: 0 0 50px rgba(255, 200, 0, 0.45);
 }
 .hero-sub {
   color: var(--texto-2);
@@ -808,7 +808,7 @@ button { font-family: var(--cuerpo); cursor: pointer; }
   transform: rotateY(-7deg) rotateX(3deg);
   box-shadow:
     0 30px 70px rgba(0, 0, 0, 0.55),
-    0 0 60px rgba(255, 214, 10, 0.12);
+    0 0 60px rgba(255, 200, 0, 0.12);
 }
 @media (prefers-reduced-motion: no-preference) {
   .mock-card { animation: flotar 5s ease-in-out infinite; }
@@ -938,7 +938,7 @@ button { font-family: var(--cuerpo); cursor: pointer; }
 .card:hover {
   transform: translateY(-4px);
   border-color: var(--fuego);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 214, 10, 0.1);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 200, 0, 0.1);
 }
 .card-pic {
   width: 52px;
@@ -1020,7 +1020,7 @@ button { font-family: var(--cuerpo); cursor: pointer; }
 }
 .cta-titulo span {
   color: var(--fuego);
-  text-shadow: 0 0 50px rgba(255, 214, 10, 0.5);
+  text-shadow: 0 0 50px rgba(255, 200, 0, 0.5);
 }
 .btn-grande { padding: 18px 32px; font-size: 17px; }
 
@@ -1047,4 +1047,35 @@ button { font-family: var(--cuerpo); cursor: pointer; }
   text-transform: uppercase;
   color: var(--texto-2);
   margin-top: 10px;
+}
+
+/* ============================================================
+   FOTOS REALES DE TEAM FIT en la landing
+   ============================================================ */
+
+.hero {
+  background:
+    linear-gradient(100deg, rgba(10, 10, 13, 0.95) 25%, rgba(10, 10, 13, 0.72) 60%, rgba(10, 10, 13, 0.45)),
+    url('/gym-entrada.jpg') center 28% / cover no-repeat;
+  border: 1px solid var(--linea);
+  border-radius: 26px;
+  padding: 56px 28px 64px;
+  margin-top: 8px;
+}
+@media (max-width: 760px) {
+  .hero { padding: 40px 20px 48px; }
+}
+
+/* titular más compacto para el eslogan del gimnasio */
+.hero-titulo {
+  font-size: clamp(30px, 6vw, 62px);
+}
+
+.cta-final {
+  background:
+    linear-gradient(rgba(10, 10, 13, 0.82), rgba(10, 10, 13, 0.82)),
+    url('/gym-frase.jpg') center 30% / cover no-repeat;
+  border: 1px solid var(--linea);
+  border-radius: 26px;
+  margin-bottom: 60px;
 }
