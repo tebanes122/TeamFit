@@ -10,6 +10,7 @@ import Pictograma from '../components/Pictogramas';
 // ============================================================
 
 const ID_PRESS_BANCA = '33333333-3333-3333-3333-333333333301';
+const DIAS_GRACIA = 5; // debe coincidir con la función cuota_bloqueada de la base
 
 // Ubicación de Team Fit (Garupá, colectora RN12) y radio permitido
 const GYM_LAT = -27.4388811;
@@ -338,6 +339,7 @@ export default function Alumno() {
   // ---------- derivados ----------
   const dias = diasHasta(alumno.vencimiento);
   const cuota = estadoCuota(dias);
+  const bloqueado = dias !== null && dias < -DIAS_GRACIA;
 
   const letras = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
   const fechasAsistidas = new Set(asistencias.map((a) => a.fecha));
@@ -423,7 +425,23 @@ export default function Alumno() {
         </div>
       </div>
 
+      {/* ---------- Aviso de bloqueo por cuota ---------- */}
+      {bloqueado && (
+        <div className="seccion">
+          <div className="banner-cuota b-vencida">
+            <div>
+              <span className="estado estado-vencida">Acceso pausado</span>
+              <p className="subtitulo" style={{ marginTop: 8 }}>
+                Tu cuota está vencida hace varios días. Para volver a marcar presente y registrar tus
+                entrenamientos, acercate a recepción a regularizarla. ¡Te esperamos! 💪
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ---------- Presente ---------- */}
+      {!bloqueado && (
       <div className="seccion">
         <button
           className={'btn' + (presenteHoy ? ' btn-secundario' : '')}
@@ -444,6 +462,7 @@ export default function Alumno() {
           </p>
         )}
       </div>
+      )}
 
       {/* ---------- Racha ---------- */}
       <div className="seccion">
