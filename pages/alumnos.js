@@ -27,6 +27,20 @@ function estadoTexto(dias) {
 
 const FORM_VACIO = { nombre: '', apellido: '', dni: '', telefono: '', email: '', plan_id: '' };
 
+function linkInvitacion(a) {
+  const base = typeof window !== 'undefined' ? window.location.origin : '';
+  const params = new URLSearchParams({ inv: a.dni || '', n: a.nombre || '', a: a.apellido || '' });
+  if (a.telefono) params.set('tel', a.telefono);
+  return base + '/login?' + params.toString();
+}
+
+function linkWspInvitacion(a) {
+  const url = linkInvitacion(a);
+  const msg = 'Hola ' + a.nombre + '! \u{1F49B} Te invitamos a activar tu cuenta en la app de Team Fit. Con este link ya quedan cargados tus datos, solo pones tu email y una contrasena:\n\n' + url + '\n\nAhi vas a ver tu rutina, tus pesos y el estado de tu cuota. Te esperamos! \u{1F4AA}';
+  const tel = (a.telefono || '').replace(/\D/g, '');
+  return 'https://wa.me/' + (tel ? '54' + tel : '') + '?text=' + encodeURIComponent(msg);
+}
+
 export default function Alumnos() {
   const router = useRouter();
   const [estado, setEstado] = useState('cargando'); // cargando | sinpermiso | ok
@@ -47,7 +61,7 @@ export default function Alumnos() {
     const [rAl, rPl] = await Promise.all([
       supabase
         .from('alumnos')
-        .select('id, nombre, apellido, dni, telefono, email, vencimiento, activo, rol, plan_id, planes(nombre, precio)')
+        .select('id, nombre, apellido, dni, telefono, email, vencimiento, activo, rol, plan_id, auth_user_id, planes(nombre, precio)')
         .eq('gimnasio_id', GIMNASIO_ID)
         .eq('rol', 'alumno')
         .order('apellido'),
@@ -229,11 +243,29 @@ export default function Alumnos() {
                 <div className="fila-info">
                   <div className="fila-nombre">{a.nombre} {a.apellido}</div>
                   <div className="fila-detalle">
-                    {a.planes?.nombre || 'Sin plan'} · Vence {fechaLinda(a.vencimiento)} · DNI {a.dni || '—'}
+                    {a.planes?.nombre || 'Sin plan'} · Vence {fechaLinda(a.vencimiento)} · DNI {a.dni || '—'} {a.auth_user_id && <span className="tiene-cuenta">✓ con cuenta</span>}
                   </div>
                 </div>
                 <span className={`estado ${est.clase}`}>{est.txt}</span>
                 <div className="acciones-alumno">
+                  {!a.auth_user_id && (
+                    a.telefono ? (
+                      <a className="btn-invitar" href={linkWspInvitacion(a)} target="_blank" rel="noreferrer" title="Invitar por WhatsApp">
+                        ✉ Invitar
+                      </a>
+                    ) : (
+                      <button
+                        className="btn-invitar"
+                        title="Copiar enlace de invitación"
+                        onClick={() => {
+                          navigator.clipboard?.writeText(linkInvitacion(a));
+                          alert('Enlace de invitación copiado. Pegáselo al alumno por donde quieras.');
+                        }}
+                      >
+                        🔗 Invitar
+                      </button>
+                    )
+                  )}
                   <button className="btn-wsp" onClick={() => abrirPago(a)}>💲 Pago</button>
                   <button className="btn-mini" onClick={() => abrirEditar(a)}>✎</button>
                   <button className="btn-mini btn-mini-baja" onClick={() => alternarActivo(a)}>⏻</button>
