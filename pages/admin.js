@@ -283,9 +283,12 @@ export default function Admin() {
         <p className="subtitulo" style={{ textTransform: 'capitalize' }}>{fechaLinda}</p>
       </div>
 
-      <div className="seccion" style={{ marginTop: 18 }}>
-        <Link href="/alumnos" className="btn" style={{ width: '100%' }}>
+      <div className="seccion" style={{ marginTop: 18, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <Link href="/alumnos" className="btn" style={{ flex: 1, minWidth: 200 }}>
           👥 Gestionar alumnos y pagos
+        </Link>
+        <Link href="/profesor" className="btn btn-secundario" style={{ flex: 1, minWidth: 200 }}>
+          🏋️ Rutinas y plantillas
         </Link>
       </div>
 
