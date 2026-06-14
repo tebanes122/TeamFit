@@ -36,7 +36,7 @@ function linkInvitacion(a) {
 
 function linkWspInvitacion(a) {
   const url = linkInvitacion(a);
-  const msg = 'Hola ' + a.nombre + '! \u{1F49B} Te invitamos a activar tu cuenta en la app de Team Fit. Con este link ya quedan cargados tus datos, solo pones tu email y una contrasena:\n\n' + url + '\n\nAhi vas a ver tu rutina, tus pesos y el estado de tu cuota. Te esperamos! \u{1F4AA}';
+  const msg = 'Hola ' + a.nombre + '! Te invitamos a activar tu cuenta en la app de Team Fit. Con este link ya quedan cargados tus datos, solo pones tu email y una contrasena:\n\n' + url + '\n\nAhi vas a ver tu rutina, tus pesos y el estado de tu cuota. Te esperamos en Team Fit!';
   const tel = (a.telefono || '').replace(/\D/g, '');
   return 'https://wa.me/' + (tel ? '54' + tel : '') + '?text=' + encodeURIComponent(msg);
 }
