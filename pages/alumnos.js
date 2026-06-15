@@ -67,7 +67,7 @@ export default function Alumnos() {
         .order('apellido'),
       supabase
         .from('planes')
-        .select('id, nombre, precio')
+        .select('id, nombre, precio, precio_transferencia')
         .eq('gimnasio_id', GIMNASIO_ID)
         .eq('activo', true)
         .order('dias_por_semana'),
@@ -90,11 +90,22 @@ export default function Alumnos() {
     });
     setModal({ tipo: 'editar', alumno: a });
   }
+  function precioSegunMetodo(a, metodo) {
+    const plan = planes.find((p) => p.id === a.plan_id);
+    if (!plan) return a.planes?.precio || '';
+    if (metodo === 'transferencia' && plan.precio_transferencia) return plan.precio_transferencia;
+    return plan.precio;
+  }
+
   function abrirPago(a) {
-    const precio = planes.find((p) => p.id === a.plan_id)?.precio || a.planes?.precio || '';
-    setPagoMonto(precio ? String(precio) : '');
     setPagoMetodo('efectivo');
+    setPagoMonto(String(precioSegunMetodo(a, 'efectivo') || ''));
     setModal({ tipo: 'pago', alumno: a });
+  }
+
+  function cambiarMetodoPago(metodo) {
+    setPagoMetodo(metodo);
+    if (modal?.alumno) setPagoMonto(String(precioSegunMetodo(modal.alumno, metodo) || ''));
   }
 
   async function guardarAlta() {
@@ -335,7 +346,7 @@ export default function Alumnos() {
                   <label className="ficha-sub" style={{ marginTop: 0 }}>Monto</label>
                   <input className="input-login" type="number" inputMode="numeric" value={pagoMonto} onChange={(e) => setPagoMonto(e.target.value)} />
                   <label className="ficha-sub">Método</label>
-                  <select className="input-login" value={pagoMetodo} onChange={(e) => setPagoMetodo(e.target.value)}>
+                  <select className="input-login" value={pagoMetodo} onChange={(e) => cambiarMetodoPago(e.target.value)}>
                     <option value="efectivo">Efectivo</option>
                     <option value="transferencia">Transferencia</option>
                     <option value="tarjeta">Tarjeta</option>
